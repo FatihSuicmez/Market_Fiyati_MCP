@@ -1,0 +1,16 @@
+# Python'a özel gereksiz dosyalar
+__pycache__/
+*.pyc
+
+# Sanal ortam klasörü (eğer kullanıyorsanız)
+venv/
+env/
+
+# Log dosyaları
+/logs/
+
+# GİZLİ BİLGİLER - ASLA GITHUB'A YÜKLENMEMELİ!
+.env
+private_key.pem
+public_key.pem
+tokens.json
