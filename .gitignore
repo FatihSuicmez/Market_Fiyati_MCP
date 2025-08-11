@@ -14,3 +14,7 @@ env/
 private_key.pem
 public_key.pem
 tokens.json
+
+# Projeye Özel Yapılandırma ve Versiyon Dosyaları
+System_prompt_*
+Workflow_*.json
