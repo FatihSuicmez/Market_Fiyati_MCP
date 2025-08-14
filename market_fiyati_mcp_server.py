@@ -1,4 +1,4 @@
-# market_fiyati_mcp_server.py (Tüm Güncellemeleri İçeren Final Versiyon)
+# market_fiyati_mcp_server.py (Yapısal Veri Gönderecek Şekilde Güncellenmiş Final Versiyon)
 
 import os
 import re
@@ -17,6 +17,7 @@ from mcp.server.fastmcp import FastMCP
 
 # Kendi modüllerimiz
 from client import MarketFiyatApiClient
+# GÜNCELLEME: Artık yeni yapıda olan ShoppingListResult modelini kullanacağız.
 from models import ShoppingListResult
 from utils.logging import setup_logger
 
@@ -27,9 +28,8 @@ load_dotenv()
 def parse_unit_price(unit_price_str: Optional[str]) -> float:
     """'101,37 ₺/kg' gibi bir metni 101.37 sayısına çevirir."""
     if not unit_price_str:
-        return float('inf')  # Eğer birim fiyat yoksa sıralamada en sona gitsin
+        return float('inf')
     try:
-        # Sadece sayıları ve virgülü al, virgülü noktaya çevir
         cleaned_str = re.sub(r'[^\d,]', '', unit_price_str).replace(',', '.')
         return float(cleaned_str)
     except (ValueError, TypeError):
@@ -117,25 +117,23 @@ class MarketMCPServer:
     def _register_tools(self):
         @self.mcp.tool()
         async def find_shopping_list_prices(
-            # ... parametreler aynı kalıyor ...
-            product_list: List[str] = Field(..., description="..."),
-            latitude: float = Field(..., description="..."),
-            longitude: float = Field(..., description="..."),
-            radius_km: int = Field(default=1, description="..."),
-            limit: Optional[int] = Field(None, description="..."),
-            sort_by: str = Field("price", description="...")
+            product_list: List[str] = Field(..., description="Fiyatları bulunacak ürünlerin listesi. Örnek: ['süt', 'bebek bezi']"),
+            latitude: float = Field(..., description="Aramanın yapılacağı merkez noktanın enlem bilgisi."),
+            longitude: float = Field(..., description="Aramanın yapılacağı merkez noktanın boylam bilgisi."),
+            radius_km: int = Field(default=1, description="Arama yapılacak alanın kilometre cinsinden yarıçapı. Varsayılan 1'dir."),
+            limit: Optional[int] = Field(None, description="Sonuçların kaç ürünle sınırlandırılacağı. Belirtilmezse tümü gelir."),
+            sort_by: str = Field("price", description="Sonuçların neye göre sıralanacağı. 'price' (fiyat) veya 'unit_price' (birim fiyat) olabilir. Varsayılan 'price'dır.")
         ) -> ShoppingListResult:
             logger.info(f"Araç çağrıldı: products={product_list}, limit={limit}, sort_by={sort_by}")
             try:
-                # Client'taki yeni ve doğru mantığa sahip fonksiyonu çağırıyoruz
                 found_products = await api_client.find_products_in_shopping_list(
                     product_names=product_list, latitude=latitude, longitude=longitude, radius_km=radius_km
                 )
 
                 if not found_products:
-                    return ShoppingListResult(found_prices_count=0, error_message="Listenizdeki ürünlerin hiçbiri bu bölgede bulunamadı.")
+                    # GÜNCELLEME: Hata durumunda yeni modele uygun boş bir liste gönderiyoruz.
+                    return ShoppingListResult(products=[], found_prices_count=0, error_message="Listenizdeki ürünlerin hiçbiri bu bölgede bulunamadı.")
 
-                # ... Sıralama ve Limitleme mantığı aynı kalıyor ...
                 if sort_by.lower() == 'unit_price':
                     found_products.sort(key=lambda p: parse_unit_price(p.unit_price))
                 else:
@@ -144,31 +142,18 @@ class MarketMCPServer:
                 if limit and limit > 0:
                     found_products = found_products[:limit]
                 
-                # --- YENİ VE DAHA ŞIK FORMATLAMA BÖLÜMÜ ---
-                summary_lines = [f"🛒 Listeniz için {len(found_products)} uygun sonuç bulundu:", ""]
-                for i, product in enumerate(found_products, 1):
-                    # Satır 1: Ürün Adı
-                    summary_lines.append(f"{i}. {product.product_title}")
-                    
-                    # Satır 2-5: Detaylar (dikey olarak hizalı)
-                    market_name = product.market_name.title()
-                    distance_str = f"{product.distance_km:.2f} km" if product.distance_km is not None else "N/A"
-                    price_str = f"{product.price:.2f} TL"
-                    unit_price_str = product.unit_price or "Belirtilmemiş"
-
-                    summary_lines.append(f"   🏪 Market: {market_name}")
-                    summary_lines.append(f"   📍 Mesafe: {distance_str}")
-                    summary_lines.append(f"   💰 Fiyat: {price_str}")
-                    summary_lines.append(f"   ⚖️ Birim Fiyatı: {unit_price_str}")
-                    
-                    # Her ürün arasına boş bir satır ekle
-                    summary_lines.append("")
-
-                return ShoppingListResult(summary="\n".join(summary_lines), found_prices_count=len(found_products))
+                # GÜNCELLEME: Metin formatlama döngüsü tamamen kaldırıldı.
+                # Artık doğrudan işlenmiş ve sıralanmış ürün listesini döndürüyoruz.
+                # n8n bu yapısal veriyi alıp kendisi formatlayacak.
+                return ShoppingListResult(
+                    products=found_products, 
+                    found_prices_count=len(found_products)
+                )
                 
             except Exception as e:
                 logger.exception("Araç çalıştırılırken beklenmedik bir hata oluştu.")
-                return ShoppingListResult(found_prices_count=0, error_message=f"Teknik bir hata oluştu: {str(e)}")
+                # GÜNCELLEME: Hata durumunda yeni modele uygun boş bir liste gönderiyoruz.
+                return ShoppingListResult(products=[], found_prices_count=0, error_message=f"Teknik bir hata oluştu: {str(e)}")
             
 # --- Sunucuyu Başlatan Komut Satırı Arayüzü ---
 @click.command()

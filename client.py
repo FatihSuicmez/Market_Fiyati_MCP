@@ -1,4 +1,4 @@
-# client.py (AttributeError Hatası Düzeltilmiş Final Versiyon)
+# client.py (Başlıklar olmadan, sadece resim URL'si eklenmiş versiyon)
 
 import os
 import asyncio
@@ -9,8 +9,7 @@ from typing import List, Optional, Dict, Any
 # .env dosyasındaki değişkenleri yükle
 load_dotenv()
 
-# Gerekli modelleri import ediyoruz
-# Not: models.py dosyasında bir değişiklik gerekmiyor.
+# Güncellediğimiz modelleri import ediyoruz
 from models import ApiSearchResponse, DetailedProductPrice
 
 class MarketFiyatApiClient:
@@ -63,8 +62,6 @@ class MarketFiyatApiClient:
             if response and response.content:
                 for item in response.content:
                     for depot_info in item.product_depot_info_list:
-                        # HATA BURADAYDI, ŞİMDİ DÜZELTİLDİ
-                        # Pydantic nesnesinden veriye nokta ile erişiyoruz.
                         depot_id = depot_info.depot_id 
                         store_details = store_details_map.get(depot_id)
                         
@@ -77,7 +74,9 @@ class MarketFiyatApiClient:
                                 price=depot_info.price,
                                 unit_price=depot_info.unit_price,
                                 market_name=depot_info.market_adi,
-                                distance_km=distance_in_km
+                                distance_km=distance_in_km,
+                                # GÜNCELLEME: API'den gelen resim adresini modele ekliyoruz.
+                                image_url=item.image_url
                             )
                             all_found_prices.append(detailed_price)
                             

@@ -1,4 +1,4 @@
-# models.py (Tüm Düzeltmeleri İçeren Final Versiyon)
+# models.py (Resim gösterme özelliği için güncellenmiş Final Versiyon)
 
 from pydantic import BaseModel, Field
 from typing import List, Optional
@@ -12,10 +12,7 @@ class ProductDepotInfo(BaseModel):
     """
     API'den gelen, bir ürünün tek bir marketteki fiyat ve konum bilgisidir.
     """
-    # DÜZELTME: API'den gelen 'depotId' (camelCase) alanını Python'daki
-    # 'depot_id' (snake_case) özelliğine bağlamak için alias eklendi.
     depot_id: str = Field(..., alias="depotId")
-    
     price: float
     unit_price: Optional[str] = Field(None, alias="unitPrice")
     market_adi: str = Field(..., alias="marketAdi")
@@ -29,6 +26,8 @@ class ContentItem(BaseModel):
     """
     title: str
     brand: Optional[str] = None
+    # GÜNCELLEME: API'den gelen resim adresini yakalamak için eklendi.
+    image_url: Optional[str] = Field(None, alias="imageUrl")
     refined_quantity_unit: Optional[str] = Field(None, alias="refinedQuantityUnit")
     product_depot_info_list: List[ProductDepotInfo] = Field(..., alias="productDepotInfoList")
 
@@ -41,13 +40,13 @@ class ApiSearchResponse(BaseModel):
 
 # ==============================================================================
 # BÖLÜM 2: İç İşlem Modeli
-# API'den alınan veriyi işleyip, mesafe gibi ek bilgilerle zenginleştirdiğimiz model.
+# API'den alınan veriyi işleyip, mesafe ve resim gibi ek bilgilerle zenginleştirdiğimiz model.
 # ==============================================================================
 
 class DetailedProductPrice(BaseModel):
     """
-    Tüm marketlerden toplanan, mesafe bilgisi eklenmiş, temiz ve detaylı 
-    ürün fiyatı modeli. Client'tan server'a bu formatta veri aktarılır.
+    Tüm marketlerden toplanan, mesafe ve resim bilgisi eklenmiş, temiz ve detaylı 
+    ürün fiyatı modeli. Bu yapı n8n'e gönderilecek.
     """
     product_title: str
     product_quantity: Optional[str] = None
@@ -55,6 +54,8 @@ class DetailedProductPrice(BaseModel):
     unit_price: Optional[str] = None
     market_name: str
     distance_km: Optional[float] = None
+    # GÜNCELLEME: Resim bilgisini n8n'e taşımak için eklendi.
+    image_url: Optional[str] = None
 
 
 # ==============================================================================
@@ -64,9 +65,10 @@ class DetailedProductPrice(BaseModel):
 
 class ShoppingListResult(BaseModel):
     """
-    'find_shopping_list_prices' aracının çıktısını tanımlar. Bu çıktı, 
-    insan tarafından okunabilir bir özet veya bir hata mesajı içerir.
+    'find_shopping_list_prices' aracının çıktısını tanımlar. Bu çıktı,
+    n8n'in işleyeceği bir ürün listesi veya bir hata mesajı içerir.
     """
-    summary: Optional[str] = Field(None, description="Bulunan ürünlerin özetlendiği, formatlanmış metin.")
+    # GÜNCELLEME: 'summary' alanı kaldırıldı, yerine 'products' listesi geldi.
+    products: List[DetailedProductPrice] = Field(description="Bulunan ürünlerin detaylı listesi.")
     found_prices_count: int = Field(description="Bulunan toplam fiyat sayısı.")
     error_message: Optional[str] = Field(None, description="Bir hata oluştuysa veya hiçbir ürün bulunamadıysa hata mesajı.")
