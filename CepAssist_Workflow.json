@@ -53,8 +53,8 @@
       "name": "If",
       "type": "n8n-nodes-base.if",
       "position": [
-        -1088,
-        -688
+        -1232,
+        -704
       ],
       "typeVersion": 2.2
     },
@@ -74,8 +74,8 @@
       "name": "Voice or Text",
       "type": "n8n-nodes-base.set",
       "position": [
-        -1248,
-        -688
+        -1392,
+        -704
       ],
       "typeVersion": 3.2
     },
@@ -88,8 +88,8 @@
       "name": "Get Voice File",
       "type": "n8n-nodes-base.telegram",
       "position": [
-        -912,
-        -688
+        -1056,
+        -704
       ],
       "typeVersion": 1.1,
       "webhookId": "68f6d69d-a333-4fb7-a525-767392e08791",
@@ -111,8 +111,8 @@
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -1280,
-        -784
+        -1424,
+        -800
       ],
       "typeVersion": 1
     },
@@ -123,8 +123,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        -176,
-        -416
+        -272,
+        -448
       ],
       "id": "2e834074-befe-48a4-af5d-db998417dd94",
       "name": "Google Gemini Chat Model",
@@ -143,8 +143,8 @@
       "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
       "typeVersion": 1.1,
       "position": [
-        224,
-        -416
+        128,
+        -448
       ],
       "id": "8261778e-7c23-44aa-ac56-87d624319ffa",
       "name": "MCP Client",
@@ -196,8 +196,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1456,
-        -1056
+        -2000,
+        -864
       ],
       "id": "143d86d6-ba10-45f4-bb46-e2a7f3d2e399",
       "name": "Code1"
@@ -209,8 +209,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -2112,
-        -96
+        -2176,
+        -224
       ],
       "id": "e3fd78bb-ac3b-4566-929d-dd555a131efc",
       "name": "Code2"
@@ -243,8 +243,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -1840,
-        -96
+        -1904,
+        -224
       ],
       "id": "c025d883-c989-4f67-b473-2b7e3538d2d1",
       "name": "If2"
@@ -260,8 +260,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -1472,
-        -80
+        -1696,
+        -208
       ],
       "id": "9c32f246-086b-4e2e-910b-d4b7f896997b",
       "name": "Send a text message1",
@@ -284,8 +284,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -1248,
-        -1056
+        -1792,
+        -864
       ],
       "id": "1e393718-4062-46fa-9f24-cbfbbdd78fb3",
       "name": "Send a text message2",
@@ -324,8 +324,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -2608,
-        -288
+        -2400,
+        -352
       ],
       "id": "201d1563-a8ba-4d9c-82df-6322b3c0475a",
       "name": "If3"
@@ -341,8 +341,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -2368,
-        -384
+        -2032,
+        -448
       ],
       "id": "29c5742c-5c90-4f50-a4a7-0f371d558ab4",
       "name": "Send a text message3",
@@ -361,8 +361,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -2160,
-        -384
+        -1824,
+        -448
       ],
       "id": "a968b382-bb55-4dd7-aee8-abdf756f53d5",
       "name": "Code3"
@@ -374,8 +374,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -384,
-        -672
+        -432,
+        -704
       ],
       "id": "8eb73b52-80c0-4fc1-acb8-698df3499d49",
       "name": "Code4"
@@ -390,8 +390,8 @@
       "name": "Window Buffer Memory",
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "position": [
-        48,
-        -448
+        -48,
+        -480
       ],
       "typeVersion": 1.2
     },
@@ -404,8 +404,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -1664,
-        -1056
+        -2208,
+        -864
       ],
       "id": "7e95c858-deda-4ce3-8ba9-b31f4c5d39ec",
       "name": "Edit Fields"
@@ -418,8 +418,8 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        1552,
-        -656
+        1104,
+        -688
       ],
       "id": "33468d72-94d9-40eb-8fe3-31ee5af03def",
       "name": "Split Out"
@@ -437,8 +437,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1840,
-        -48
+        1520,
+        -704
       ],
       "id": "75255a74-3cd8-4bc7-b590-8f34e7e0ef5f",
       "name": "Send a photo message",
@@ -486,8 +486,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1456,
-        80
+        1280,
+        -688
       ],
       "id": "63ae7543-6c5f-4cbb-8499-41ea230268a2",
       "name": "If4"
@@ -510,8 +510,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1664,
-        176
+        1392,
+        -544
       ],
       "id": "76ab0acd-493c-42c3-9467-cafc9590651d",
       "name": "Edit Fields1"
@@ -544,8 +544,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        768,
-        -672
+        560,
+        -688
       ],
       "id": "76c0d08d-bc07-4477-a401-fd54c6f51f64",
       "name": "If5"
@@ -561,8 +561,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        976,
-        -576
+        864,
+        -608
       ],
       "id": "6c0b0664-60d3-44ae-9541-cb15c2c5c549",
       "name": "Send a text message5",
@@ -585,8 +585,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        976,
-        -768
+        864,
+        -800
       ],
       "id": "eff4318f-b6b7-439c-a108-e8451372789a",
       "name": "Send a text message6",
@@ -600,7 +600,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Ajanın çıktısını al.\nconst agentOutputString = $input.item.json.output;\n\n// Girdi boşsa veya tanımsızsa, hemen boş sonuç döndür.\nif (!agentOutputString) {\n  return [];\n}\n\nlet jsonString = null;\n\n// YÖNTEM 1: Markdown kod bloğunu ara (```json ... ```)\n// Regex ile kod bloğunun içindeki veriyi yakala.\nconst markdownMatch = agentOutputString.match(/```json\\s*([\\s\\S]*?)\\s*```/);\n\nif (markdownMatch && markdownMatch[1]) {\n  // Eğer Markdown bloğu bulunduysa, içindeki temiz JSON'u al.\n  jsonString = markdownMatch[1];\n} else {\n  // YÖNTEM 2: Markdown bloğu yoksa, eski yöntemi dene (ilk '{' karakterini bul)\n  const jsonStartIndex = agentOutputString.indexOf('{');\n  if (jsonStartIndex !== -1) {\n    // Sadece '{' karakterinden itibaren metnin sonuna kadar olan kısmı al.\n    jsonString = agentOutputString.substring(jsonStartIndex);\n  }\n}\n\n// Eğer iki yöntemden biriyle bir JSON metni bulunduysa, ayrıştırmayı dene.\nif (jsonString) {\n  try {\n    const parsedJson = JSON.parse(jsonString);\n    // Başarılı olursa, temiz veriyi bir sonraki noda gönder.\n    return [parsedJson];\n  } catch (error) {\n    // JSON ayrıştırma sırasında bir hata olursa, bunu logla ve akışı durdur.\n    console.error(\"JSON ayrıştırılırken hata oluştu:\", error);\n    console.error(\"Hatalı JSON metni:\", jsonString);\n    return [];\n  }\n}\n\n// Eğer metnin içinde JSON bulunamadıysa, boş sonuç döndür.\nreturn [];"
+        "jsCode": "// Ajanın çıktısını al.\nconst agentOutputString = $input.item.json.output;\n\n// Girdi boşsa veya tanımsızsa, hemen boş sonuç döndür.\nif (!agentOutputString) {\n  return [];\n}\n\nlet jsonString = null;\n\n// YÖNTEM 1: Markdown kod bloğunu ara (```json ... ```)\n// Regex ile kod bloğunun içindeki veriyi yakala.\nconst markdownMatch = agentOutputString.match(/```json\\s*([\\s\\S]*?)\\s*```/);\n\nif (markdownMatch && markdownMatch[1]) {\n  // Eğer Markdown bloğu bulunduysa, içindeki temiz JSON'u al.\n  jsonString = markdownMatch[1];\n} else {\n  // YÖNTEM 2: Markdown bloğu yoksa, eski yöntemi dene (ilk '{' karakterini bul)\n  const jsonStartIndex = agentOutputString.indexOf('{');\n  if (jsonStartIndex !== -1) {\n    // Sadece '{' karakterinden itibaren metnin sonuna kadar olan kısmı al.\n    jsonString = agentOutputString.substring(jsonStartIndex);\n  }\n}\n\n// Eğer iki yöntemden biriyle bir JSON metni bulunduysa, ayrıştırmayı dene.\nif (jsonString) {\n  try {\n    // =================================================================\n    // YENİ EKLENEN VE SORUNU ÇÖZEN SATIR\n    // Python'dan gelen 'None' değerini standart 'null' değerine çevir.\n    jsonString = jsonString.replace(/\\bNone\\b/g, 'null');\n    // =================================================================\n\n    const parsedJson = JSON.parse(jsonString);\n    // Başarılı olursa, temiz veriyi bir sonraki noda gönder.\n    return [parsedJson];\n  } catch (error) {\n    // JSON ayrıştırma sırasında bir hata olursa, bunu logla ve akışı durdur.\n    console.error(\"JSON ayrıştırılırken hata oluştu:\", error);\n    console.error(\"Hatalı JSON metni:\", jsonString);\n    return [];\n  }\n}\n\n// Eğer metnin içinde JSON bulunamadıysa, boş sonuç döndür.\nreturn [];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -652,8 +652,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -576,
-        -1072
+        -1248,
+        -1008
       ],
       "id": "8be63a42-0bc0-4190-80ab-111668aa22aa",
       "name": "initialize upload session1",
@@ -693,8 +693,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -144,
-        -1040
+        -848,
+        -976
       ],
       "id": "a3a15e21-0237-46ce-a17f-dcb38abb765c",
       "name": "Upload file1"
@@ -708,8 +708,8 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.1,
       "position": [
-        -336,
-        -1040
+        -1008,
+        -976
       ],
       "id": "82c37ed3-614c-4d21-ac90-c69a4b72f652",
       "name": "Merge1"
@@ -728,8 +728,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        80,
-        -992
+        -784,
+        -816
       ],
       "id": "3b0e3801-f452-4500-b014-000dce67d09b",
       "name": "Ask Gemini to transcribe1",
@@ -768,8 +768,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -1504,
-        -336
+        -1456,
+        -416
       ],
       "id": "d391b90b-461a-4fae-b242-c7f02886080b",
       "name": "If6"
@@ -782,8 +782,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -1200,
-        -368
+        -1248,
+        -432
       ],
       "id": "e95c00c1-1d32-4151-b312-e88024f25427",
       "name": "Get a file",
@@ -836,8 +836,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -960,
-        -208
+        -1248,
+        -256
       ],
       "id": "79971a35-81f0-4d81-8a6e-7d2aec14ce9e",
       "name": "initialize upload session",
@@ -857,8 +857,8 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.1,
       "position": [
-        -672,
-        -384
+        -1024,
+        -400
       ],
       "id": "8c1c0aa2-b524-4354-8770-ef274729fd65",
       "name": "Merge"
@@ -892,8 +892,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -624,
-        -144
+        -1024,
+        -176
       ],
       "id": "26d81f31-10cb-4438-8fbd-6a4fe30d765f",
       "name": "Upload file"
@@ -912,8 +912,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -368,
-        -144
+        -816,
+        -240
       ],
       "id": "5d2187e5-1875-41f7-b402-a2cd4b35f6f5",
       "name": "Ask Gemini to transcribe",
@@ -948,8 +948,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -160,
-        -144
+        -816,
+        -400
       ],
       "id": "66614147-d0ef-4058-8e44-0049ab3c2ace",
       "name": "Edit Fields2"
@@ -966,10 +966,85 @@
       "name": "CepAssist",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "position": [
-        -48,
-        -688
+        -144,
+        -720
       ],
       "typeVersion": 1.6
+    },
+    {
+      "parameters": {
+        "content": "## User Input & Session Management",
+        "height": 1056,
+        "width": 1056
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2560,
+        -1104
+      ],
+      "typeVersion": 1,
+      "id": "ee63eff0-e38c-4d51-b024-914b38d3cb65",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Multi-Modal Input Processing",
+        "height": 1056,
+        "width": 928
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1472,
+        -1104
+      ],
+      "typeVersion": 1,
+      "id": "e688e327-854e-43c4-ac0f-288719fe05d4",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## AI Core - Agent & Tools",
+        "height": 624,
+        "width": 768
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -480,
+        -912
+      ],
+      "typeVersion": 1,
+      "id": "8fb4d64f-19f8-4bcd-b472-98676cdd9eac",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## Process & Validate Agent Output",
+        "height": 320,
+        "width": 416
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        320,
+        -800
+      ],
+      "typeVersion": 1,
+      "id": "acae5add-36f2-4c0a-a2d4-ea9745dca5d2",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Format & Send User Response",
+        "height": 608,
+        "width": 960
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        800,
+        -912
+      ],
+      "typeVersion": 1,
+      "id": "8e0ba28b-5c87-4d89-8a75-3d30558f7ba2",
+      "name": "Sticky Note5"
     }
   ],
   "pinData": {},
@@ -1395,7 +1470,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "ccaa0b01-eac3-4155-bf6e-67ff194e0758",
+  "versionId": "0270db32-a35c-4c55-9067-d2c1c545930c",
   "meta": {
     "instanceId": "776ffa1de860d99220db3da20571e11915ae0f5454b218b1b5641c11bc7ced4c"
   },
