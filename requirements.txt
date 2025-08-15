@@ -1,0 +1,18 @@
+# --- AI & Sunucu Mimarisi ---
+fast-mcp==0.1.0        # Model Context Protocol (MCP) sunucusunu oluşturmak için
+uvicorn==0.30.1        # Yüksek performanslı ASGI sunucusu (FastMCP'yi çalıştırmak için)
+
+# --- Web & API ---
+Flask==3.0.3           # dashboard.py'deki token üretim paneli için
+httpx==0.27.0          # marketfiyati.org.tr API'sine asenkron istek yapmak için
+
+# --- Güvenlik & Token ---
+PyJWT==2.8.0           # JSON Web Token (JWT) oluşturma ve doğrulama için
+cryptography==42.0.8   # Token imzalama işlemleri için kriptografik araçlar
+
+# --- Veri & Konfigürasyon ---
+pydantic==2.7.4        # models.py'deki veri modellerini oluşturmak ve doğrulamak için
+python-dotenv==1.0.1   # .env dosyasındaki ortam değişkenlerini okumak için
+
+# --- Komut Satırı Arayüzü ---
+click==8.1.7           # Sunucuyu parametrelerle başlatmak için (market_fiyati_mcp_server.py)

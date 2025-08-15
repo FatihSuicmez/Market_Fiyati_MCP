@@ -1,0 +1,1404 @@
+{
+  "name": "CepAssist",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "b581677b-511a-4069-b683-9becaf0b0a36",
+      "name": "Listen for incoming events",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "position": [
+        -2400,
+        -672
+      ],
+      "webhookId": "322dce18-f93e-4f86-b9b1-3305519b7834",
+      "typeVersion": 1,
+      "credentials": {
+        "telegramApi": {
+          "id": "5GZoshRgBqHMDRQs",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "a0bf9719-4272-46f6-ab3b-eda6f7b44fd8",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f72a0003-e06f-416b-a8d3-b4530b3c9d95",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -1088,
+        -688
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "fields": {
+          "values": [
+            {
+              "name": "text",
+              "stringValue": "={{ $json?.message?.text || \"\" }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f2346c40-c3e4-4c8b-912e-43b7106a0116",
+      "name": "Voice or Text",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -1248,
+        -688
+      ],
+      "typeVersion": 3.2
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $('Listen for incoming events').item.json.message.voice.file_id }}"
+      },
+      "id": "00552e27-4073-40cf-93e8-e14742269434",
+      "name": "Get Voice File",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        -912,
+        -688
+      ],
+      "typeVersion": 1.1,
+      "webhookId": "68f6d69d-a333-4fb7-a525-767392e08791",
+      "credentials": {
+        "telegramApi": {
+          "id": "5GZoshRgBqHMDRQs",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Process Telegram Request\n",
+        "height": 278.75,
+        "width": 496.25,
+        "color": 5
+      },
+      "id": "1e13924f-dde2-46de-b3c5-0c22c75d08c5",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1280,
+        -784
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        -416
+      ],
+      "id": "2e834074-befe-48a4-af5d-db998417dd94",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "sNJNG40p9s56gWBW",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "endpointUrl": "https://f8436f4e80e7.ngrok-free.app/sse",
+        "authentication": "bearerAuth"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        -416
+      ],
+      "id": "8261778e-7c23-44aa-ac56-87d624319ffa",
+      "name": "MCP Client",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "eUrUveebD9ZKBVSo",
+          "name": "Bearer Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f2336149-e5a0-4e98-aad1-8ea7b3c9887f",
+              "leftValue": "={{ $json.message.location }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2032,
+        -672
+      ],
+      "id": "e0e8b185-a333-4077-b459-e74fea0305e9",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Gelen veriyi bir değişkene alıyoruz.\n// Bu veri, \"Veriyi Hazırla\" nodundan gelen { key, latitude, longitude } nesnesidir.\nconst item = $input.item.json;\n\n// 'global' static veriye erişiyoruz. 'global' dememizin sebebi,\n// bu veriye başka bir noddan da erişmek istememiz.\nconst staticData = $getWorkflowStaticData('global');\n\n// Her kullanıcı için benzersiz bir anahtar oluşturuyoruz.\n// 'user_' ön eki, başka verilerle karışmasını önler.\nconst userKey = 'user_' + item.key;\n\n// Kullanıcının konumunu, oluşturduğumuz anahtarla static veriye kaydediyoruz.\n// Bu, bir JavaScript nesnesine veri eklemekle aynıdır.\nstaticData[userKey] = {\n  latitude: item.latitude,\n  longitude: item.longitude,\n  savedAt: new Date().toISOString() // Ne zaman kaydettiğimizi de ekleyelim (opsiyonel).\n};\n\n// Gelen veriyi bir sonraki noda (Telegram onay mesajı) olduğu gibi aktarıyoruz.\n// Böylece Chat ID'yi kaybetmemiş oluruz.\nreturn item;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1456,
+        -1056
+      ],
+      "id": "143d86d6-ba10-45f4-bb46-e2a7f3d2e399",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Gelen orijinal veriyi alıyoruz (içinde message.chat.id var).\nconst incomingData = $input.item.json;\n\n// 'global' static veriye erişiyoruz.\nconst staticData = $getWorkflowStaticData('global');\n\n// Bu kullanıcıya ait veriyi bulmak için anahtarı oluşturuyoruz.\nconst userKey = 'user_' + incomingData.message.chat.id;\n\n// static veriden bu kullanıcıya ait konumu çekiyoruz.\n// Eğer kayıt yoksa, bu değişken 'undefined' (boş) olacaktır.\nconst storedLocation = staticData[userKey];\n\n// Gelen veriye, bulduğumuz konumu 'storedLocation' adıyla yeni bir alan olarak ekliyoruz.\n// Bu, bir sonraki IF nodunun kontrol edeceği alandır.\nincomingData.storedLocation = storedLocation;\n\n// Zenginleştirilmiş veriyi bir sonraki noda aktarıyoruz.\nreturn incomingData;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2112,
+        -96
+      ],
+      "id": "e3fd78bb-ac3b-4566-929d-dd555a131efc",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9a242d12-587e-4c8a-b0b8-5a678576cf3b",
+              "leftValue": "={{ $json.storedLocation }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1840,
+        -96
+      ],
+      "id": "c025d883-c989-4f67-b473-2b7e3538d2d1",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "⚠️ Lütfen sorgu yapmadan önce konumunuzu gönderin.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1472,
+        -80
+      ],
+      "id": "9c32f246-086b-4e2e-910b-d4b7f896997b",
+      "name": "Send a text message1",
+      "webhookId": "f2057092-7df2-446a-8db9-578037ff3097",
+      "credentials": {
+        "telegramApi": {
+          "id": "5GZoshRgBqHMDRQs",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.key }}",
+        "text": "✅ Konumunuz alındı. Şimdi sorunuzu sorabilirsiniz.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1248,
+        -1056
+      ],
+      "id": "1e393718-4062-46fa-9f24-cbfbbdd78fb3",
+      "name": "Send a text message2",
+      "webhookId": "36458058-bcad-45ff-bc99-74f333463783",
+      "credentials": {
+        "telegramApi": {
+          "id": "5GZoshRgBqHMDRQs",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "be19a6af-ab1c-4576-b5d6-a2ce8b755b93",
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "/yenikonum",
+              "operator": {
+                "type": "string",
+                "operation": "startsWith"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2608,
+        -288
+      ],
+      "id": "201d1563-a8ba-4d9c-82df-6322b3c0475a",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "✅ Anlaşıldı. Kayıtlı konumunuz sıfırlanıyor. Lütfen yeni konumu gönderin.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2368,
+        -384
+      ],
+      "id": "29c5742c-5c90-4f50-a4a7-0f371d558ab4",
+      "name": "Send a text message3",
+      "webhookId": "11115390-21c6-497b-b9cf-c2262c4ef05e",
+      "credentials": {
+        "telegramApi": {
+          "id": "5GZoshRgBqHMDRQs",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 'global' static veriye erişiyoruz.\nconst staticData = $getWorkflowStaticData('global');\n\n// Bu kullanıcıya ait anahtarı, DOĞRU YOLDAN alıyoruz.\nconst userKey = 'user_' + $json.result.chat.id;\n\n// 'delete' komutu ile bu kullanıcıya ait veriyi siliyoruz.\ndelete staticData[userKey];\n\n// Akışın BAŞARIYLA tamamlandığını n8n'e bildirmek için bir JSON nesnesi döndürüyoruz.\n// return []; yerine bunu kullanmak, değişikliğin kaydedilmesini sağlar.\nreturn {\n  json: {\n    status: 'deleted',\n    userKey: userKey\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2160,
+        -384
+      ],
+      "id": "a968b382-bb55-4dd7-aee8-abdf756f53d5",
+      "name": "Code3"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.item.json;\nlet userQuestion = '';\nlet location = null;\n\n// YENİ MANTIK: Gelen verinin METİN/RESİM yolundan mı, yoksa SES yolundan mı geldiğini ayırt et.\n// Önceliği her zaman bizim oluşturduğumuz 'text' alanına veriyoruz.\nif (item.text) { \n    // METİN veya RESİM yolundan geliyorsa 'text' alanı dolu olacaktır.\n    userQuestion = item.text;\n    location = item.storedLocation;\n\n} else if (item.candidates && item.candidates.length > 0 && item.candidates[0].content.parts[0].text) { \n    // Sadece 'text' alanı yoksa ve 'candidates' varsa, bunun bir SESLİ KOMUT olduğunu varsay.\n    userQuestion = item.candidates[0].content.parts[0].text;\n    location = $('Code2').item.json.storedLocation; // Konumu Code2'den al\n}\n\n// Konumun string olma ihtimaline karşı garantili parse işlemi\nif (location && typeof location === 'string') {\n  try {\n    location = JSON.parse(location);\n  } catch (e) {\n    console.error(\"storedLocation JSON'a çevrilemedi:\", location, e);\n    location = null;\n  }\n}\n\n// Verileri Birleştirerek \"agent_input\" oluştur\nif (userQuestion && location && location.latitude && location.longitude) {\n    const agentInputString = `Kullanıcı sorusu: ${userQuestion}\\nKullanıcının kayıtlı konumu (latitude): ${location.latitude}\\nKullanıcının kayıtlı konumu (longitude): ${location.longitude}`;\n    item.agent_input = agentInputString;\n} else if (userQuestion) {\n    // Konum bilgisi yoksa veya hatalıysa, sadece kullanıcı sorusunu gönder.\n    item.agent_input = `Kullanıcı sorusu: ${userQuestion}`;\n} else {\n    // Hiçbir soru metni bulunamadıysa (beklenmedik bir durum).\n    item.agent_input = 'Kullanıcı sorusu: Belirtilmedi';\n}\n\n// Güncellenmiş veriyi bir sonraki noda gönder\nreturn item;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -384,
+        -672
+      ],
+      "id": "8eb73b52-80c0-4fc1-acb8-698df3499d49",
+      "name": "Code4"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Listen for incoming events').first().json.message.from.id }}",
+        "contextWindowLength": 10
+      },
+      "id": "f0e16784-d6c0-4569-b5ff-f4a433bd968b",
+      "name": "Window Buffer Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "position": [
+        48,
+        -448
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{\n  {\n    \"key\": $json.message.chat.id,\n    \"latitude\": $json.message.location.latitude,\n    \"longitude\": $json.message.location.longitude\n  }\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1664,
+        -1056
+      ],
+      "id": "7e95c858-deda-4ce3-8ba9-b31f4c5d39ec",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "products",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1552,
+        -656
+      ],
+      "id": "33468d72-94d9-40eb-8fe3-31ee5af03def",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "operation": "sendPhoto",
+        "chatId": "={{ $('Listen for incoming events').item.json.message.chat.id }}",
+        "file": "={{ $json.image_url }}",
+        "additionalFields": {
+          "caption": "=🛒 *{{ $json.product_title }}*\n\n🏪 *Market:* {{ $json.market_name.toUpperCase().replace(/[_*\\[\\]()~`>#+\\-=|{}.!]/g, '\\\\$&') }}\n\n💰 *Fiyat:* {{ $json.price.toFixed(2) }} TL\n\n⚖️ *Birim Fiyatı:* {{ ($json.unit_price || 'Belirtilmemiş').toString().replace(/[_*\\[\\]()~`>#+\\-=|{}.!]/g, '\\\\$&') }}\n\n📍 *Mesafe:* {{ $json.distance_km ? $json.distance_km.toFixed(2) + ' km' : 'N/A' }}",
+          "parse_mode": "Markdown"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1840,
+        -48
+      ],
+      "id": "75255a74-3cd8-4bc7-b590-8f34e7e0ef5f",
+      "name": "Send a photo message",
+      "webhookId": "60b21897-d05c-4161-a43f-8831a870e498",
+      "credentials": {
+        "telegramApi": {
+          "id": "5GZoshRgBqHMDRQs",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3f3f9859-49c6-4ed3-ba26-eacb9f3f5a83",
+              "leftValue": "={{ $json.image_url }}",
+              "rightValue": ".jpg",
+              "operator": {
+                "type": "string",
+                "operation": "endsWith"
+              }
+            },
+            {
+              "id": "974428ae-52cc-412b-b679-94f6d9ea357e",
+              "leftValue": "={{ $json.image_url }}",
+              "rightValue": ".png",
+              "operator": {
+                "type": "string",
+                "operation": "endsWith"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1456,
+        80
+      ],
+      "id": "63ae7543-6c5f-4cbb-8499-41ea230268a2",
+      "name": "If4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7e8e0cf4-77db-4e2b-bf9d-7d3a534019b5",
+              "name": "image_url",
+              "value": "https://imgur.com/a/R7cmRxK",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1664,
+        176
+      ],
+      "id": "76ab0acd-493c-42c3-9467-cafc9590651d",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c55ea062-1c0f-4024-9afe-1c1953802b0e",
+              "leftValue": "={{ $json.products }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        768,
+        -672
+      ],
+      "id": "76c0d08d-bc07-4477-a401-fd54c6f51f64",
+      "name": "If5"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Listen for incoming events').item.json.message.chat.id }}",
+        "text": "Üzgünüm, aradığınız kriterlere uygun ürün bu bölgede bulunamadı.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        976,
+        -576
+      ],
+      "id": "6c0b0664-60d3-44ae-9541-cb15c2c5c549",
+      "name": "Send a text message5",
+      "webhookId": "ec9d5ace-a742-4247-a7ea-c4ef510fdf1b",
+      "credentials": {
+        "telegramApi": {
+          "id": "5GZoshRgBqHMDRQs",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Listen for incoming events').item.json.message.chat.id }}",
+        "text": "=İsteğiniz için {{ $json.products.length }} adet sonuç buldum. İşte listeliyorum:",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        976,
+        -768
+      ],
+      "id": "eff4318f-b6b7-439c-a108-e8451372789a",
+      "name": "Send a text message6",
+      "webhookId": "330fd197-9bd5-4839-afe2-13b541244871",
+      "credentials": {
+        "telegramApi": {
+          "id": "5GZoshRgBqHMDRQs",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Ajanın çıktısını al.\nconst agentOutputString = $input.item.json.output;\n\n// Girdi boşsa veya tanımsızsa, hemen boş sonuç döndür.\nif (!agentOutputString) {\n  return [];\n}\n\nlet jsonString = null;\n\n// YÖNTEM 1: Markdown kod bloğunu ara (```json ... ```)\n// Regex ile kod bloğunun içindeki veriyi yakala.\nconst markdownMatch = agentOutputString.match(/```json\\s*([\\s\\S]*?)\\s*```/);\n\nif (markdownMatch && markdownMatch[1]) {\n  // Eğer Markdown bloğu bulunduysa, içindeki temiz JSON'u al.\n  jsonString = markdownMatch[1];\n} else {\n  // YÖNTEM 2: Markdown bloğu yoksa, eski yöntemi dene (ilk '{' karakterini bul)\n  const jsonStartIndex = agentOutputString.indexOf('{');\n  if (jsonStartIndex !== -1) {\n    // Sadece '{' karakterinden itibaren metnin sonuna kadar olan kısmı al.\n    jsonString = agentOutputString.substring(jsonStartIndex);\n  }\n}\n\n// Eğer iki yöntemden biriyle bir JSON metni bulunduysa, ayrıştırmayı dene.\nif (jsonString) {\n  try {\n    const parsedJson = JSON.parse(jsonString);\n    // Başarılı olursa, temiz veriyi bir sonraki noda gönder.\n    return [parsedJson];\n  } catch (error) {\n    // JSON ayrıştırma sırasında bir hata olursa, bunu logla ve akışı durdur.\n    console.error(\"JSON ayrıştırılırken hata oluştu:\", error);\n    console.error(\"Hatalı JSON metni:\", jsonString);\n    return [];\n  }\n}\n\n// Eğer metnin içinde JSON bulunamadıysa, boş sonuç döndür.\nreturn [];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        368,
+        -688
+      ],
+      "id": "dba37602-ebbd-4e04-b480-5f2481cc9da0",
+      "name": "Code5"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/upload/v1beta/files",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googlePalmApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Goog-Upload-Protocol",
+              "value": "resumable"
+            },
+            {
+              "name": "X-Goog-Upload-Command",
+              "value": "start"
+            },
+            {
+              "name": "X-Goog-Upload-Header-Content-Length",
+              "value": "={{ $json.result.file_size }}"
+            },
+            {
+              "name": "X-Goog-Upload-Header-Content-Type",
+              "value": "audio/ogg"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"file\": {\n    \"display_name\": \"file_0\"\n  }\n}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -576,
+        -1072
+      ],
+      "id": "8be63a42-0bc0-4190-80ab-111668aa22aa",
+      "name": "initialize upload session1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "sNJNG40p9s56gWBW",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.headers['x-goog-upload-url'] }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Length",
+              "value": "={{ $json.result.file_size }}"
+            },
+            {
+              "name": "X-Goog-Upload-Offset",
+              "value": "0"
+            },
+            {
+              "name": "X-Goog-Upload-Command",
+              "value": "upload, finalize"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -144,
+        -1040
+      ],
+      "id": "a3a15e21-0237-46ce-a17f-dcb38abb765c",
+      "name": "Upload file1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        -336,
+        -1040
+      ],
+      "id": "82c37ed3-614c-4d21-ac90-c69a4b72f652",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googlePalmApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        { \"text\": \"Transcribe the following audio message:\" },\n        { \n          \"file_data\": {\n            \"mime_type\": \"audio/ogg\",\n            \"file_uri\": \"{{ $json.file.uri }}\"\n          }\n        }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        80,
+        -992
+      ],
+      "id": "3b0e3801-f452-4500-b014-000dce67d09b",
+      "name": "Ask Gemini to transcribe1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "sNJNG40p9s56gWBW",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "aecf7894-c8e9-4059-9213-ab3bd3ed1f85",
+              "leftValue": "={{ $json.message.photo }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "array",
+                "operation": "lengthGt",
+                "rightType": "number"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1504,
+        -336
+      ],
+      "id": "d391b90b-461a-4fae-b242-c7f02886080b",
+      "name": "If6"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $('Listen for incoming events').item.json.message.photo[3].file_id }}"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1200,
+        -368
+      ],
+      "id": "e95c00c1-1d32-4151-b312-e88024f25427",
+      "name": "Get a file",
+      "webhookId": "182dc77b-0591-4fb5-9d07-9ee6e0df8cb0",
+      "credentials": {
+        "telegramApi": {
+          "id": "5GZoshRgBqHMDRQs",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/upload/v1beta/files",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googlePalmApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Goog-Upload-Protocol",
+              "value": "resumable"
+            },
+            {
+              "name": "X-Goog-Upload-Command",
+              "value": "start"
+            },
+            {
+              "name": "X-Goog-Upload-Header-Content-Length",
+              "value": "={{ $('Get a file').item.binary.data.size }}"
+            },
+            {
+              "name": "X-Goog-Upload-Header-Content-Type",
+              "value": "image/jpeg"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"file\": {\"display_name\": \"telegram_image\"}}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -960,
+        -208
+      ],
+      "id": "79971a35-81f0-4d81-8a6e-7d2aec14ce9e",
+      "name": "initialize upload session",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "sNJNG40p9s56gWBW",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        -672,
+        -384
+      ],
+      "id": "8c1c0aa2-b524-4354-8770-ef274729fd65",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.headers['x-goog-upload-url'] }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Length",
+              "value": "={{ $json.result.file_size }}"
+            },
+            {
+              "name": "X-Goog-Upload-Offset",
+              "value": "0"
+            },
+            {
+              "name": "X-Goog-Upload-Command",
+              "value": "upload, finalize"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -624,
+        -144
+      ],
+      "id": "26d81f31-10cb-4438-8fbd-6a4fe30d765f",
+      "name": "Upload file"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googlePalmApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"Senin görevin, bir görseldeki ürünün adını tespit edip, sadece ve sadece o ürünün adını ve markasını metin olarak vermektir. Çıktında başka hiçbir açıklama, selamlama veya ek bilgi olmayacak.\\n\\nÖRNEK 1:\\nGirdi: [Bir kutu Pınar Süt resmi]\\nÇıktı: Pınar Süt 1L\\n\\nÖRNEK 2:\\nGirdi: [Bir paket Ülker Çikolatalı Gofret resmi]\\nÇıktı: Ülker Çikolatalı Gofret\\n\\nŞimdi sana verilen asıl görevi yap. Kullanıcının ek notu: {{ $('Listen for incoming events').item.json.message.caption || 'Yok' }}\"\n        },\n        {\n          \"file_data\": {\n            \"mime_type\": \"image/jpeg\",\n            \"file_uri\": \"{{ $json.file.uri }}\"\n          }\n        }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -368,
+        -144
+      ],
+      "id": "5d2187e5-1875-41f7-b402-a2cd4b35f6f5",
+      "name": "Ask Gemini to transcribe",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "sNJNG40p9s56gWBW",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7aed8eb5-44a2-4a9a-8865-f57b26498351",
+              "name": "text",
+              "value": "={{ `${$json.candidates[0].content.parts[0].text} ${$('Listen for incoming events').item.json.message.caption || ''}`.trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "e8a63a8a-f297-4fa2-b14d-1ddf1e1dfbbc",
+              "name": "storedLocation",
+              "value": "={{ $('Code2').item.json.storedLocation }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -160,
+        -144
+      ],
+      "id": "66614147-d0ef-4058-8e44-0049ab3c2ace",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.agent_input }}",
+        "options": {
+          "systemMessage": "=Sen, 'CepMarket' adlı çok yetenekli bir market asistanısın. İki ana görevin var: Fiyat bulmak ve ürünleri araştırmak.\n\n## ARAÇLARIN\n1.  `find_shopping_list_prices`: Türkiye'deki marketlerde ürünlerin fiyatını, birim fiyatını ve mesafesini bulur.\n\n## ANA İŞ AKIŞIN\n\nHer zaman önce kullanıcının ne istediğini anla. Kullanıcı fiyat mı soruyor, yoksa bir ürün hakkında bilgi mi istiyor?\n\n### SENARO 1: KULLANICI FİYAT SORDUĞUNDA\n\nBu en yaygın senaryodur. Aşağıdaki adımları izle:\n\n1.  **Parametreleri Hazırla:**\n    * `product_list`: Kullanıcının aradığı ürünleri bir metin listesine dönüştür. (Örnek: \"süt ve peynir\" -> `['süt', 'peynir']`).\n    * `latitude`, `longitude`: Bu bilgileri sana sağlanan verilerden al.\n    * `radius_km`: Kullanıcı \"3 km çevrede\" gibi bir mesafe belirtirse o değeri kullan. Belirtmezse, **varsayılan olarak `1` kullan.**\n    * `sort_by`: Kullanıcı \"birim fiyatı\" derse `'unit_price'`, demezse `'price'` olarak ayarla.\n    * `limit`: Kullanıcı \"en ucuz 3 tane\" gibi bir sayı belirtirse `limit=3` olarak ayarla. Belirtmezse bu parametreyi kullanma.\n\n2.  **Fiyat Aracını Çağır:** Hazırladığın parametrelerle `find_shopping_list_prices` aracını çalıştır.\n\n3.  **Açıklama İsteğini Kontrol Et:** Fiyatları bulduktan sonra, kullanıcının aynı soruda ürün hakkında bir açıklama isteyip istemediğini kontrol et.\n\n4.  **Cevabı Oluştur:**\n    * Araç, sana içinde ürünlerin olduğu `products` adında bir **liste** döndürecek.\n    * Senin görevin bu listeyi **değiştirmeden** olduğu gibi çıktı olarak vermektir.\n    * Sistemin sonraki adımı bu listeyi alıp kullanıcıya resimli olarak gösterecektir. Lütfen listeyi metne çevirmeye çalışma."
+        }
+      },
+      "id": "293ff4ec-fe0d-4a69-bc84-12ba1db9901c",
+      "name": "CepAssist",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        -48,
+        -688
+      ],
+      "typeVersion": 1.6
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Get Voice File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Voice or Text": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Voice File": {
+      "main": [
+        [
+          {
+            "node": "initialize upload session1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Listen for incoming events": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "CepAssist",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "CepAssist",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "If6",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Send a text message3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message3": {
+      "main": [
+        [
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code4": {
+      "main": [
+        [
+          {
+            "node": "CepAssist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "CepAssist",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "If4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If4": {
+      "main": [
+        [
+          {
+            "node": "Send a photo message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Send a photo message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If5": {
+      "main": [
+        [
+          {
+            "node": "Send a text message6",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code5": {
+      "main": [
+        [
+          {
+            "node": "If5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "initialize upload session1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file1": {
+      "main": [
+        [
+          {
+            "node": "Ask Gemini to transcribe1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Upload file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ask Gemini to transcribe1": {
+      "main": [
+        [
+          {
+            "node": "Code4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If6": {
+      "main": [
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Voice or Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "initialize upload session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "initialize upload session": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "Ask Gemini to transcribe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ask Gemini to transcribe": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Code4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CepAssist": {
+      "main": [
+        [
+          {
+            "node": "Code5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ccaa0b01-eac3-4155-bf6e-67ff194e0758",
+  "meta": {
+    "instanceId": "776ffa1de860d99220db3da20571e11915ae0f5454b218b1b5641c11bc7ced4c"
+  },
+  "id": "TffgabzX1SV6FmT4",
+  "tags": []
+}

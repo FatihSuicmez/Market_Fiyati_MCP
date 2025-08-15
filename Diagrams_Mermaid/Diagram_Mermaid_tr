@@ -1,0 +1,107 @@
+%%{ init: { 'theme': 'base', 'themeVariables': { 'primaryColor': '#F9FAFB', 'primaryTextColor': '#111827', 'lineColor': '#4B5563', 'secondaryColor': '#E5E7EB' }}}%%
+graph TD
+    %% --- NODE TANIMLAMALARI ---
+    subgraph "Kullanıcı Arayüzü"
+        User[📱 Kullanıcı]
+    end
+
+    subgraph "n8n İş Akışı Motoru"
+        Trigger["Listen for incoming events (Telegram Trigger)"]
+        Router{"If (Gelen Mesaj Türü?)"}
+        
+        subgraph "Girdi İşleme Kolları"
+            KonumYonetimi["📍 Konum Yönetimi<br/>(If1, Code1, staticData)"]
+            SesIsleme["🔊 Ses İşleme<br/>(Get Voice File -> 3x HTTP Request)"]
+            ResimIsleme["🖼️ Resim İşleme<br/>(Get a file -> 3x HTTP Request)"]
+        end
+
+        SorguHazirlama["⚙️ Sorgu Hazırlama (Code4)<br/>Metin ve Konumu Birleştirir"]
+        Agent["🤖 CepAssist Agent"]
+        
+        subgraph "Sonuç Sunum Mantığı"
+            SonucKontrol{"If (Sonuç Var mı?)"}
+            GirisMesaji["✉️ Telegram (Giriş Cümlesi)"]
+            HataMesaji["🚫 Telegram (Ürün Bulunamadı)"]
+            SplitOut["Split Out (Ürünleri Ayırır)"]
+            ResimFiltre{"If (Resim Geçerli mi?)"}
+            LogoEkle["Set (Logo Ekler)"]
+            SonucGonder["🖼️ Telegram (sendPhoto)"]
+        end
+    end
+
+    subgraph "Python MCP Sunucusu (Yerel Makine)"
+        Ngrok[🌍 Ngrok Tüneli]
+        MCPServer["market_fiyati_mcp_server.py"]
+        Client["client.py"]
+        Dashboard["dashboard.py (Token için)"]
+    end
+
+    subgraph "Harici Servisler"
+        TelegramAPI[✈️ Telegram API]
+        MarketAPI["marketfiyati.org.tr API<br/>(/nearest, /search)"]
+        GeminiFileAPI["Google Gemini File API<br/>(Ses/Resim Yükleme)"]
+    end
+
+    %% --- BAĞLANTILAR ---
+    User -- "Metin, Ses, Resim, Konum" --> TelegramAPI
+    TelegramAPI --> Trigger
+    Trigger --> Router
+    Router -- "Konum ise" --> KonumYonetimi
+    Router -- "Resim ise" --> ResimIsleme
+    Router -- "Ses ise" --> SesIsleme
+    Router -- "Metin ise (default)" --> SorguHazirlama
+    ResimIsleme -- "Tanınan Ürün Adı" --> SorguHazirlama
+    SesIsleme -- "Deşifre Edilmiş Metin" --> SorguHazirlama
+    SorguHazirlama -- "agent_input" --> Agent
+    Agent -- "MCP Çağrısı (tool call)" --> Ngrok
+    Ngrok --> MCPServer
+    MCPServer --> Client
+    Client -- "Fiyat Sorgusu" --> MarketAPI
+    ResimIsleme --> GeminiFileAPI
+    SesIsleme --> GeminiFileAPI
+    Dashboard -- "Bearer Token sağlar (güvenlik)" --> Agent
+    MarketAPI -- "Ürün Listesi + Mesafe" --> Client
+    Client -- "İşlenmiş Ürün Listesi" --> MCPServer
+    MCPServer -- "ShoppingListResult" --> Ngrok
+    Ngrok --> Agent
+    Agent -- "JSON Çıktısı" --> SonucKontrol
+    SonucKontrol -- "Ürün Yoksa (FALSE)" --> HataMesaji
+    SonucKontrol -- "Ürün Varsa (TRUE)" --> GirisMesaji
+    HataMesaji --> TelegramAPI
+    GirisMesaji --> SplitOut
+    SplitOut -- "Her Ürün İçin" --> ResimFiltre
+    ResimFiltre -- "Geçersizse (FALSE)" --> LogoEkle
+    ResimFiltre -- "Geçerliyse (TRUE)" --> SonucGonder
+    LogoEkle --> SonucGonder
+    SonucGonder --> TelegramAPI
+
+    %% --- STYLING (Yeni Yöntem) ---
+    %% Kullanıcı Arayüzü (Açık Mavi)
+    style User fill:#E0F7FA,stroke:#00796B,stroke-width:2px,color:#004D40
+    style TelegramAPI fill:#E0F7FA,stroke:#00796B,stroke-width:2px,color:#004D40
+
+    %% n8n İş Akışı (Açık Mor)
+    style Trigger fill:#EDE7F6,stroke:#5E35B1,stroke-width:2px,color:#311B92
+    style Router fill:#EDE7F6,stroke:#D81B60,stroke-width:3px,color:#311B92
+    style KonumYonetimi fill:#EDE7F6,stroke:#5E35B1,stroke-width:2px,color:#311B92
+    style SesIsleme fill:#EDE7F6,stroke:#5E35B1,stroke-width:2px,color:#311B92
+    style ResimIsleme fill:#EDE7F6,stroke:#5E35B1,stroke-width:2px,color:#311B92
+    style SorguHazirlama fill:#D1C4E9,stroke:#5E35B1,stroke-width:3px,color:#311B92
+    style Agent fill:#D1C4E9,stroke:#5E35B1,stroke-width:3px,color:#311B92
+    style SonucKontrol fill:#EDE7F6,stroke:#D81B60,stroke-width:3px,color:#311B92
+    style ResimFiltre fill:#EDE7F6,stroke:#D81B60,stroke-width:3px,color:#311B92
+    style GirisMesaji fill:#EDE7F6,stroke:#5E35B1,stroke-width:2px,color:#311B92
+    style HataMesaji fill:#FFCDD2,stroke:#C62828,stroke-width:2px,color:#B71C1C
+    style SplitOut fill:#EDE7F6,stroke:#5E35B1,stroke-width:2px,color:#311B92
+    style LogoEkle fill:#EDE7F6,stroke:#5E35B1,stroke-width:2px,color:#311B92
+    style SonucGonder fill:#EDE7F6,stroke:#5E35B1,stroke-width:2px,color:#311B92
+
+    %% Python Sunucusu (Açık Yeşil)
+    style Ngrok fill:#E8F5E9,stroke:#388E3C,stroke-width:2px,color:#1B5E20
+    style MCPServer fill:#E8F5E9,stroke:#388E3C,stroke-width:2px,color:#1B5E20
+    style Client fill:#E8F5E9,stroke:#388E3C,stroke-width:2px,color:#1B5E20
+    style Dashboard fill:#E8F5E9,stroke:#388E3C,stroke-width:2px,color:#1B5E20
+
+    %% Harici Servisler (Açık Turuncu)
+    style MarketAPI fill:#FFF3E0,stroke:#F57C00,stroke-width:2px,color:#E65100
+    style GeminiFileAPI fill:#FFF3E0,stroke:#F57C00,stroke-width:2px,color:#E65100

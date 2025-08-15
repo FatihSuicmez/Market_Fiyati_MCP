@@ -1,0 +1,107 @@
+%%{ init: { 'theme': 'base', 'themeVariables': { 'primaryColor': '#F9FAFB', 'primaryTextColor': '#111827', 'lineColor': '#4B5563', 'secondaryColor': '#E5E7EB' }}}%%
+graph TD
+    %% --- NODE DEFINITIONS ---
+    subgraph "User Interface"
+        User[📱 User]
+    end
+
+    subgraph "n8n Workflow Engine"
+        Trigger["Listen for incoming events (Telegram Trigger)"]
+        Router{"If (Message Type?)"}
+        
+        subgraph "Input Processing Branches"
+            LocationMgmt["📍 Location Management<br/>(If1, Code1, staticData)"]
+            VoiceProcessing["🔊 Voice Processing<br/>(Get Voice File -> 3x HTTP Request)"]
+            ImageProcessing["🖼️ Image Processing<br/>(Get a file -> 3x HTTP Request)"]
+        end
+
+        QueryPrep["⚙️ Query Preparation (Code4)<br/>Combines Text and Location"]
+        Agent["🤖 CepAssist Agent"]
+        
+        subgraph "Result Presentation Logic"
+            ResultCheck{"If (Results Exist?)"}
+            IntroMessage["✉️ Telegram (Intro Sentence)"]
+            ErrorMessage["🚫 Telegram (Product Not Found)"]
+            SplitOut["Split Out (Splits Products)"]
+            ImageFilter{"If (Image Valid?)"}
+            AddLogo["Set (Adds Logo)"]
+            SendResult["🖼️ Telegram (sendPhoto)"]
+        end
+    end
+
+    subgraph "Python MCP Server (Local Machine)"
+        Ngrok[🌍 Ngrok Tunnel]
+        MCPServer["market_fiyati_mcp_server.py"]
+        Client["client.py"]
+        Dashboard["dashboard.py (for Token)"]
+    end
+
+    subgraph "External Services"
+        TelegramAPI[✈️ Telegram API]
+        MarketAPI["marketfiyati.org.tr API<br/>(/nearest, /search)"]
+        GeminiFileAPI["Google Gemini File API<br/>(Audio/Image Upload)"]
+    end
+
+    %% --- CONNECTIONS ---
+    User -- "Sends Text, Voice, Image, Location" --> TelegramAPI
+    TelegramAPI --> Trigger
+    Trigger --> Router
+    Router -- "If Location" --> LocationMgmt
+    Router -- "If Image" --> ImageProcessing
+    Router -- "If Voice" --> VoiceProcessing
+    Router -- "If Text (default)" --> QueryPrep
+    ImageProcessing -- "Recognized Product Name" --> QueryPrep
+    VoiceProcessing -- "Transcribed Text" --> QueryPrep
+    QueryPrep -- "agent_input" --> Agent
+    Agent -- "MCP Call (tool call)" --> Ngrok
+    Ngrok --> MCPServer
+    MCPServer --> Client
+    Client -- "Price Query" --> MarketAPI
+    ImageProcessing --> GeminiFileAPI
+    VoiceProcessing --> GeminiFileAPI
+    Dashboard -- "Provides Bearer Token (security)" --> Agent
+    MarketAPI -- "Product List + Distance" --> Client
+    Client -- "Processed Product List" --> MCPServer
+    MCPServer -- "ShoppingListResult" --> Ngrok
+    Ngrok --> Agent
+    Agent -- "JSON Output" --> ResultCheck
+    ResultCheck -- "If No Products (FALSE)" --> ErrorMessage
+    ResultCheck -- "If Products Exist (TRUE)" --> IntroMessage
+    ErrorMessage --> TelegramAPI
+    IntroMessage --> SplitOut
+    SplitOut -- "For Each Product" --> ImageFilter
+    ImageFilter -- "If Invalid (FALSE)" --> AddLogo
+    ImageFilter -- "If Valid (TRUE)" --> SendResult
+    AddLogo --> SendResult
+    SendResult --> TelegramAPI
+
+    %% --- STYLING ---
+    %% User Interface (Light Blue)
+    style User fill:#E0F7FA,stroke:#00796B,stroke-width:2px,color:#004D40
+    style TelegramAPI fill:#E0F7FA,stroke:#00796B,stroke-width:2px,color:#004D40
+
+    %% n8n Workflow (Light Purple)
+    style Trigger fill:#EDE7F6,stroke:#5E35B1,stroke-width:2px,color:#311B92
+    style Router fill:#EDE7F6,stroke:#D81B60,stroke-width:3px,color:#311B92
+    style LocationMgmt fill:#EDE7F6,stroke:#5E35B1,stroke-width:2px,color:#311B92
+    style VoiceProcessing fill:#EDE7F6,stroke:#5E35B1,stroke-width:2px,color:#311B92
+    style ImageProcessing fill:#EDE7F6,stroke:#5E35B1,stroke-width:2px,color:#311B92
+    style QueryPrep fill:#D1C4E9,stroke:#5E35B1,stroke-width:3px,color:#311B92
+    style Agent fill:#D1C4E9,stroke:#5E35B1,stroke-width:3px,color:#311B92
+    style ResultCheck fill:#EDE7F6,stroke:#D81B60,stroke-width:3px,color:#311B92
+    style ImageFilter fill:#EDE7F6,stroke:#D81B60,stroke-width:3px,color:#311B92
+    style IntroMessage fill:#EDE7F6,stroke:#5E35B1,stroke-width:2px,color:#311B92
+    style ErrorMessage fill:#FFCDD2,stroke:#C62828,stroke-width:2px,color:#B71C1C
+    style SplitOut fill:#EDE7F6,stroke:#5E35B1,stroke-width:2px,color:#311B92
+    style AddLogo fill:#EDE7F6,stroke:#5E35B1,stroke-width:2px,color:#311B92
+    style SendResult fill:#EDE7F6,stroke:#5E35B1,stroke-width:2px,color:#311B92
+
+    %% Python Server (Light Green)
+    style Ngrok fill:#E8F5E9,stroke:#388E3C,stroke-width:2px,color:#1B5E20
+    style MCPServer fill:#E8F5E9,stroke:#388E3C,stroke-width:2px,color:#1B5E20
+    style Client fill:#E8F5E9,stroke:#388E3C,stroke-width:2px,color:#1B5E20
+    style Dashboard fill:#E8F5E9,stroke:#388E3C,stroke-width:2px,color:#1B5E20
+
+    %% External Services (Light Orange)
+    style MarketAPI fill:#FFF3E0,stroke:#F57C00,stroke-width:2px,color:#E65100
+    style GeminiFileAPI fill:#FFF3E0,stroke:#F57C00,stroke-width:2px,color:#E65100
